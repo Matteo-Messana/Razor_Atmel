@@ -151,62 +151,71 @@ State Machine Function Definitions
 static void UserApp1SM_Idle(void)
 {
   static u16 u16Counter = 0;
-  static LedRateType eRate=LED_PWM_0;
+  static LedRateType eRateW=LED_PWM_0;
+  static LedRateType eRateP=LED_PWM_5;
+  static LedRateType eRateB=LED_PWM_10;
+  static LedRateType eRateC=LED_PWM_15;
+  static LedRateType eRateG=LED_PWM_20;
+  static LedRateType eRateY=LED_PWM_25;
+  static LedRateType eRateO=LED_PWM_30;
+  static LedRateType eRateR=LED_PWM_35;
   static bool bflip=FALSE;
-  static u8 u8Switch= 0 ;
   u16Counter++;
-  WHITE=0;
-  PURPLE=1;
-  BLUE=2;
-  CYAN=3;
-  GREEN=4;
-  YELLOW=5;
-  ORANGE=6;
-  RED=7;
+
   
   if(u16Counter == 40 && bflip == FALSE)
     {
     u16Counter=0;
-    eRate++;
-    if(eRate <= LED_PWM_100)
+    eRateW++;
+    eRateP++;
+    eRateB++;
+    eRateC++;
+    eRateG++;
+    eRateY++;
+    eRateO++;
+    eRateR++;
+    if(eRateR <= LED_PWM_100)
       {
-      LedPWM(WHITE,eRate);
+      LedPWM(WHITE,eRateW);
+      LedPWM(PURPLE,eRateP);
+      LedPWM(BLUE,eRateB);
+      LedPWM(CYAN,eRateC);
+      LedPWM(GREEN,eRateG);
+      LedPWM(YELLOW,eRateY);
+      LedPWM(ORANGE,eRateO);
+      LedPWM(RED,eRateR);
       }
     }
   
   if(u16Counter == 40 && bflip == TRUE)
     {
     u16Counter=0;
-    eRate--;
-    if(eRate >= LED_PWM_0)
+    eRateW--;
+    eRateP--;
+    eRateB--;
+    eRateC--;
+    eRateG--;
+    eRateY--;
+    eRateO--;
+    eRateR--;
+    if(eRateR >= LED_PWM_0)
       {
-      LedPWM(WHITE,eRate);
+      LedPWM(WHITE,eRateW);
+      LedPWM(PURPLE,eRateP);
+      LedPWM(BLUE,eRateB);
+      LedPWM(CYAN,eRateC);
+      LedPWM(GREEN,eRateG);
+      LedPWM(YELLOW,eRateY);
+      LedPWM(ORANGE,eRateO);
+      LedPWM(RED,eRateR);
       }
     }
   
-    if(u16Counter == 40 && bflip == FALSE)
-    {
-    u16Counter=0;
-    eRate++;
-    if(eRate <= LED_PWM_100)
-      {
-      LedPWM(PURPLE,eRate);
-      }
-    }
+ 
   
-  if(u16Counter == 40 && bflip == TRUE)
-    {
-    u16Counter=0;
-    eRate--;
-    if(eRate >= LED_PWM_0)
-      {
-      LedPWM(PURPLE,eRate);
-      }
-    }
-  
-      if(eRate == LED_PWM_0)
+      if(eRateR == LED_PWM_0)
         bflip=FALSE;
-      if(eRate == LED_PWM_100)
+      if(eRateR == LED_PWM_100)
         bflip=TRUE;
   
 } /* end UserApp1SM_Idle() */
