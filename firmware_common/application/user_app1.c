@@ -87,6 +87,20 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+  /* All discrete LEDs to off */
+  LedOff(WHITE);
+  LedOff(PURPLE);
+  LedOff(BLUE);
+  LedOff(CYAN);
+  LedOff(GREEN);
+  LedOff(YELLOW);
+  LedOff(ORANGE);
+  LedOff(RED);
+  
+  /* Backlight to white */  
+  LedOn(LCD_RED);
+  LedOn(LCD_GREEN);
+  LedOn(LCD_BLUE);
  
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -136,7 +150,65 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
-
+  static u16 u16Counter = 0;
+  static LedRateType eRate=LED_PWM_0;
+  static bool bflip=FALSE;
+  static u8 u8Switch= 0 ;
+  u16Counter++;
+  WHITE=0;
+  PURPLE=1;
+  BLUE=2;
+  CYAN=3;
+  GREEN=4;
+  YELLOW=5;
+  ORANGE=6;
+  RED=7;
+  
+  if(u16Counter == 40 && bflip == FALSE)
+    {
+    u16Counter=0;
+    eRate++;
+    if(eRate <= LED_PWM_100)
+      {
+      LedPWM(WHITE,eRate);
+      }
+    }
+  
+  if(u16Counter == 40 && bflip == TRUE)
+    {
+    u16Counter=0;
+    eRate--;
+    if(eRate >= LED_PWM_0)
+      {
+      LedPWM(WHITE,eRate);
+      }
+    }
+  
+    if(u16Counter == 40 && bflip == FALSE)
+    {
+    u16Counter=0;
+    eRate++;
+    if(eRate <= LED_PWM_100)
+      {
+      LedPWM(PURPLE,eRate);
+      }
+    }
+  
+  if(u16Counter == 40 && bflip == TRUE)
+    {
+    u16Counter=0;
+    eRate--;
+    if(eRate >= LED_PWM_0)
+      {
+      LedPWM(PURPLE,eRate);
+      }
+    }
+  
+      if(eRate == LED_PWM_0)
+        bflip=FALSE;
+      if(eRate == LED_PWM_100)
+        bflip=TRUE;
+  
 } /* end UserApp1SM_Idle() */
     
 
