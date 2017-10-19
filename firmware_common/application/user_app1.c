@@ -87,6 +87,11 @@ Promises:
 */
 void UserApp1Initialize(void)
 {
+
+  /* Start with red LED on 100%, green and blue off */
+  LedPWM(LCD_RED, LED_PWM_100);
+  LedPWM(LCD_GREEN, LED_PWM_0);
+  LedPWM(LCD_BLUE, LED_PWM_0);
  
   /* If good initialization, set state to Idle */
   if( 1 )
@@ -136,7 +141,66 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
+#ifdef EIE1
+  static LedNumberType aeCurrentLed[]  = {LCD_GREEN, LCD_RED, LCD_BLUE, LCD_GREEN, LCD_RED, LCD_BLUE};
+#endif /* EIE 1 */
+  static bool abLedRateIncreasing[]   = {TRUE,      FALSE,   TRUE,     FALSE,     TRUE,    FALSE};
+  static u8 u8CurrentLedIndex  = 0;
+  static u8 u8LedCurrentLevel  = 0;
+  static u8 u8DutyCycleCounter = 0;
+  static u16 u16Counter = COLOR_CYCLE_TIME;
+  static bool bCyclingOn =TRUE;
+    /* Advance the cycle only if bCyclingOn */
+  if(bCyclingOn)
+  {
+    u16Counter--;
+  }
+  /* Check for update color every COLOR_CYCLE_TIME ms */  
+  if(u16Counter == 0)
+  {
+    u16Counter = COLOR_CYCLE_TIME;
 
+    /* Update the current level based on which way it's headed */
+
+    /* Update the value to the current LED */   
+    LedPWM( (LedNumberType)aeCurrentLed[u8CurrentLedIndex], (LedRateType)u8LedCurrentLevel);
+  }
+  /* Update the current level based on which way it's headed */
+    if( abLedRateIncreasing[u8CurrentLedIndex] )
+    {
+      u8LedCurrentLevel++;
+    }
+    else
+    {
+      u8LedCurrentLevel--;
+    }
+
+    /* Change direction once we're at the end */
+    u8DutyCycleCounter++;
+    if(u8DutyCycleCounter == 20)
+    {
+      u8DutyCycleCounter = 0;
+      
+      /* Watch for the indexing variable to reset */
+      u8CurrentLedIndex++;
+      if(u8CurrentLedIndex == sizeof(aeCurrentLed))
+      {
+        u8CurrentLedIndex = 0;
+      }
+      
+      /* Set the current level based on what direction we're now going */
+      u8LedCurrentLevel = 20;
+      if(abLedRateIncreasing[u8CurrentLedIndex])
+      {
+         u8LedCurrentLevel = 0;
+      }
+    }
+    /* Toggle cycling on and off */
+  if( WasButtonPressed(BUTTON0) )
+  {
+    ButtonAcknowledge(BUTTON0);
+    bCyclingOn = (bool)!bCyclingOn;
+  }
 } /* end UserApp1SM_Idle() */
     
 
