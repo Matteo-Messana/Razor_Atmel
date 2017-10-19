@@ -150,31 +150,40 @@ State Machine Function Definitions
 /* Wait for ??? */
 static void UserApp1SM_Idle(void)
 {
+  static u8 u8ColorIndex = 0;
+  static u16 u16CounterFinale = 0;
   static u16 u16Counter = 0;
+  static u16 u16Finale = 0;
   static LedRateType eRateW=LED_PWM_0;
-  static LedRateType eRateP=LED_PWM_5;
-  static LedRateType eRateB=LED_PWM_10;
-  static LedRateType eRateC=LED_PWM_15;
-  static LedRateType eRateG=LED_PWM_20;
-  static LedRateType eRateY=LED_PWM_25;
-  static LedRateType eRateO=LED_PWM_30;
-  static LedRateType eRateR=LED_PWM_35;
+  static LedRateType eRateP=LED_PWM_100;
+  static LedRateType eRateB=LED_PWM_0;
+  static LedRateType eRateC=LED_PWM_100;
+  static LedRateType eRateG=LED_PWM_0;
+  static LedRateType eRateY=LED_PWM_100;
+  static LedRateType eRateO=LED_PWM_0;
+  static LedRateType eRateR=LED_PWM_100;
   static bool bflip=FALSE;
   u16Counter++;
+  u16Finale++;
 
-  
-  if(u16Counter == 40 && bflip == FALSE)
+  /* 1 
+  First if statement of the main color loop.
+  causes the white LED to start from LED_PWM_0 and increment up
+  to LED_PWM_100. Alternates this order back for each
+  subsequent LED from a starting point of LED_PWM_0 to LED_PWM_100.
+  */
+  if(u16Counter == MAIN_TIMER_LIMIT && bflip == FALSE && u16Finale < FINALE_TIMER_LIMIT)
     {
     u16Counter=0;
     eRateW++;
-    eRateP++;
+    eRateP--;
     eRateB++;
-    eRateC++;
+    eRateC--;
     eRateG++;
-    eRateY++;
+    eRateY--;
     eRateO++;
-    eRateR++;
-    if(eRateR <= LED_PWM_100)
+    eRateR--;
+    if(eRateW <= LED_PWM_100)
       {
       LedPWM(WHITE,eRateW);
       LedPWM(PURPLE,eRateP);
@@ -186,19 +195,21 @@ static void UserApp1SM_Idle(void)
       LedPWM(RED,eRateR);
       }
     }
-  
-  if(u16Counter == 40 && bflip == TRUE)
+  /* 2
+  does the exact opposite of 1.
+  */
+  if(u16Counter == MAIN_TIMER_LIMIT && bflip == TRUE && u16Finale < FINALE_TIMER_LIMIT)
     {
     u16Counter=0;
     eRateW--;
-    eRateP--;
+    eRateP++;
     eRateB--;
-    eRateC--;
+    eRateC++;
     eRateG--;
-    eRateY--;
+    eRateY++;
     eRateO--;
-    eRateR--;
-    if(eRateR >= LED_PWM_0)
+    eRateR++;
+    if(eRateW >= LED_PWM_0)
       {
       LedPWM(WHITE,eRateW);
       LedPWM(PURPLE,eRateP);
@@ -210,13 +221,166 @@ static void UserApp1SM_Idle(void)
       LedPWM(RED,eRateR);
       }
     }
-  
+      if(eRateW == LED_PWM_0)
+      {
+        bflip=FALSE;
+      }
+      if(eRateW == LED_PWM_100)
+      {
+        bflip=TRUE;
+      }
+     /* 3
+      begins the Finale Loop. Counter for Finale has been
+  incrementing since the start of the program. Once it hits the
+  specified value, the main color loop terminates and 
+  */
+  if(u16Finale>=FINALE_TIMER_LIMIT)
+  {
+    u16CounterFinale++;
+    
+    if(u16CounterFinale == 10)
+    {
+      LedOff(WHITE);
+      LedOff(PURPLE);
+      LedOff(BLUE);
+      LedOff(CYAN);
+      LedOff(GREEN);
+      LedOff(YELLOW);
+      LedOff(ORANGE);
+      LedOff(RED);
+    }
+    
+    if(u16CounterFinale == 300)
+    {
+      LedToggle(RED);
+      LedToggle(WHITE);
+    }
+    
+    if(u16CounterFinale == 600)
+    {
+      LedToggle(ORANGE);
+      LedToggle(PURPLE);
+    }
+    
+    if(u16CounterFinale == 900)
+    {
+      LedToggle(YELLOW);
+      LedToggle(BLUE);
+    }
+    
+    if(u16CounterFinale == 1200)
+    {
+      LedToggle(CYAN);
+      LedToggle(GREEN);
+    }
+    
+    if(u16CounterFinale == 1500)
+    {
+      LedToggle(WHITE);
+    }
+    
+    if(u16CounterFinale == 1600)
+    {
+      LedToggle(PURPLE);
+    }
+    
+    if(u16CounterFinale == 1700)
+    {
+      LedToggle(BLUE);
+    }
+    
+    if(u16CounterFinale == 1800)
+    {
+      LedToggle(CYAN);
+    }
+    
+    if(u16CounterFinale == 1900)
+    {
+      LedToggle(GREEN);
+    }
+    
+    if(u16CounterFinale == 2000)
+    {
+      LedToggle(YELLOW);
+    }
+    
+    if(u16CounterFinale == 2100)
+    {
+      LedToggle(ORANGE);
+    }
+    
+    if(u16CounterFinale == 2200)
+    {
+      LedToggle(RED);
+    }
+    
+    if(u16CounterFinale > 2300)
+    {
+     u8ColorIndex++;
+     if(u8ColorIndex == 7)
+     {
+       u8ColorIndex = 0;
+     }
+     switch(u8ColorIndex)
+      {
+        case 0: /* white */
+          LedOn(LCD_RED);
+          LedOn(LCD_GREEN);
+          LedOn(LCD_BLUE);
+          break;
+
+        case 1: /* purple */
+          LedOn(LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOn(LCD_BLUE);
+          break;
+          
+        case 2: /* blue */
+          LedOff(LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOn(LCD_BLUE);
+          break;
+          
+        case 3: /* cyan */
+          LedOff(LCD_RED);
+          LedOn(LCD_GREEN);
+          LedOn(LCD_BLUE);
+          break;
+          
+        case 4: /* green */
+          LedOff(LCD_RED);
+          LedOn(LCD_GREEN);
+          LedOff(LCD_BLUE);
+          break;
+          
+        case 5: /* yellow */
+          LedOn(LCD_RED);
+          LedOn(LCD_GREEN);
+          LedOff(LCD_BLUE);
+          break;
+          
+        case 6: /* red */
+          LedOn(LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOff(LCD_BLUE);
+          break;
+          
+        default: /* off */
+          LedOff(LCD_RED);
+          LedOff(LCD_GREEN);
+          LedOff(LCD_BLUE);
+          break;
+      }
+    u16CounterFinale = 0;
+    u16Finale = 0;
+    u16Counter=0;
+    }
+    
+  }
  
   
-      if(eRateR == LED_PWM_0)
-        bflip=FALSE;
-      if(eRateR == LED_PWM_100)
-        bflip=TRUE;
+
+       
   
 } /* end UserApp1SM_Idle() */
     
